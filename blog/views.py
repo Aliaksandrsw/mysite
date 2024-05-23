@@ -3,7 +3,7 @@ from django.core.mail import send_mail
 from django.shortcuts import render, get_object_or_404
 from django.urls import reverse_lazy, reverse
 from django.views.generic import ListView, DetailView, FormView, CreateView
-
+from taggit.models import Tag
 from blog.forms import EmailPostForm, CommentForm
 from blog.models import Post
 
@@ -16,7 +16,19 @@ class PostList(ListView):
     paginate_orphans = 0
 
     def get_queryset(self):
-        return Post.published.all()
+        queryset = super().get_queryset()
+        tag_slug = self.kwargs.get('tag_slug')
+        if tag_slug:
+            tag = get_object_or_404(Tag, slug=tag_slug)
+            queryset = queryset.filter(tags__in=[tag])
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        tag_slug = self.kwargs.get('tag_slug')
+        if tag_slug:
+            context['tag'] = get_object_or_404(Tag, slug=tag_slug)
+        return context
 
 
 class PostDetail(DetailView):
