@@ -1,10 +1,12 @@
 from django.conf import settings
+from django.contrib.postgres.search import SearchVector
 from django.core.mail import send_mail
 from django.shortcuts import render, get_object_or_404
 from django.urls import reverse_lazy, reverse
+from django.views import View
 from django.views.generic import ListView, DetailView, FormView, CreateView
 from taggit.models import Tag
-from blog.forms import EmailPostForm, CommentForm
+from blog.forms import EmailPostForm, CommentForm, SearchForm
 from blog.models import Post
 
 
@@ -87,3 +89,21 @@ class PostComment(CreateView):
         comment.post = post
         comment.save()
         return super().form_valid(form)
+
+
+class PostSearch(View):
+    def get(self, request):
+        form = SearchForm(request.GET)
+        query = None
+        results = []
+        if form.is_valid():
+            query = form.cleaned_data['query']
+            results = Post.published.annotate(
+                search=SearchVector('title', 'body')
+            ).filter(search=query)
+        return render(request, 'blog/post/search.html', {
+            'form': form,
+            'query': query,
+            'results': results
+        })
+
