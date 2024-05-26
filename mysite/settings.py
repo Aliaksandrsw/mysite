@@ -1,16 +1,16 @@
-import os
 from pathlib import Path
+from dotenv import load_dotenv
+import os
+load_dotenv()
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
+SECRET_KEY = str(os.getenv('SECRET_KEY'))
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-1&chx#+yi&6x!ewnqxhyk@06&^ob2zlnc0kp#@740yz$sh!3mw'
 
-# SECURITY WARNING: don't run with debug turned on in production!
+SOCIAL_AUTH_GITHUB_KEY = str(os.getenv('GITHUB_KEY'))
+SOCIAL_AUTH_GITHUB_SECRET = str(os.getenv('GITHUB_SECRET'))
+
 DEBUG = True
 
 ALLOWED_HOSTS = []
@@ -30,6 +30,7 @@ INSTALLED_APPS = [
     'django.contrib.sitemaps',
     'django.contrib.postgres',
     'accounts.apps.AccountsConfig',
+    'social_django',
 ]
 
 MIDDLEWARE = [
@@ -56,6 +57,9 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+
+                'social_django.context_processors.backends',
+                'social_django.context_processors.login_redirect',
             ],
         },
     },
@@ -95,6 +99,16 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+
+AUTHENTICATION_BACKENDS = (
+    'social_core.backends.github.GithubOAuth2',
+    'social_core.backends.google.GoogleOAuth2',
+
+    'django.contrib.auth.backends.ModelBackend',
+)
+
+
+
 LANGUAGE_CODE = 'ru'
 
 TIME_ZONE = 'UTC'
@@ -126,3 +140,5 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 # EMAIL_USE_TLS = True
 
 SESSION_COOKIE_AGE = 60 * 60 * 24 * 30
+
+
