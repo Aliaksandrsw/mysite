@@ -11,6 +11,8 @@ SECRET_KEY = str(os.getenv('SECRET_KEY'))
 SOCIAL_AUTH_GITHUB_KEY = str(os.getenv('GITHUB_KEY'))
 SOCIAL_AUTH_GITHUB_SECRET = str(os.getenv('GITHUB_SECRET'))
 
+AUTH_USER_MODEL = 'accounts.ExtendedUser'
+
 DEBUG = True
 
 ALLOWED_HOSTS = []

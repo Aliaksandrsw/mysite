@@ -4,6 +4,8 @@ from django.urls import reverse
 from django.utils import timezone
 from taggit.managers import TaggableManager
 
+from accounts.models import ExtendedUser
+
 
 class PublishedManager(models.Manager):
     def get_queryset(self):
@@ -18,7 +20,7 @@ class Post(models.Model):
 
     title = models.CharField(max_length=250)
     slug = models.SlugField(max_length=250, unique=True)
-    author = models.ForeignKey(User,
+    author = models.ForeignKey(ExtendedUser,
                                on_delete=models.CASCADE,
                                related_name='blog_posts')
 

@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 
-from accounts.models import Profile
+from accounts.models import Profile, ExtendedUser
 
 
 class SignUpForm(UserCreationForm):
@@ -14,7 +14,7 @@ class SignUpForm(UserCreationForm):
     password2 = forms.CharField(max_length=50, widget=forms.PasswordInput())
 
     class Meta:
-        model = User
+        model = ExtendedUser
         fields = ['first_name', 'last_name', 'username', 'email', 'password1', 'password2']
 
 
@@ -28,7 +28,7 @@ class LoginForm(AuthenticationForm):
     remember_me = forms.BooleanField(required=False)
 
     class Meta:
-        model = User
+        model = ExtendedUser
         fields = ['username', 'password', 'remember_me']
 
 
@@ -40,7 +40,7 @@ class UpdateUserForm(forms.ModelForm):
                              widget=forms.TextInput())
 
     class Meta:
-        model = User
+        model = ExtendedUser
         fields = ['username', 'email']
 
 

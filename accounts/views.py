@@ -3,12 +3,13 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView, PasswordChangeView
 from django.contrib.messages.views import SuccessMessageMixin
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy
 from django.views import View
 from django.views.generic import CreateView, TemplateView
 
 from accounts.forms import SignUpForm, LoginForm, UpdateUserForm, UpdateProfileForm
+from accounts.models import ExtendedUser
 
 
 class SignUpView(CreateView):
@@ -90,3 +91,14 @@ class ChangePasswordView(SuccessMessageMixin, PasswordChangeView):
     template_name = 'registration/change_password.html'
     success_message = "Successfully Changed Your Password"
     success_url = reverse_lazy('users-profile')
+
+
+class VerifyView(View):
+    template_name = 'activate.html'
+
+    def get(self, request, uuid):
+        user = get_object_or_404(ExtendedUser, verification_uuid=uuid, is_verified=False)
+        user.is_verified = True
+        user.is_active = True
+        user.save()
+        return render(request, self.template_name)

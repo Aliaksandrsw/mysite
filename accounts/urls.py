@@ -9,4 +9,5 @@ urlpatterns = [
     path('logout/', auth_views.LogoutView.as_view(template_name='registration/logout.html'), name='logout'),
     path('profile/', ProfileViews.as_view(), name='users-profile'),
     path('password_change/', ChangePasswordView.as_view(), name='password_change'),
+    path('verify/<uuid>', VerifyView.as_view(), name='verify'),
 ]
