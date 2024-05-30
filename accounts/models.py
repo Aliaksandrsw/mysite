@@ -1,6 +1,7 @@
 import uuid
 
 from PIL import Image
+from django.contrib.admin.models import LogEntry
 from django.db import models
 from django.contrib.auth.models import User, AbstractUser
 
@@ -22,6 +23,10 @@ class ExtendedUser(AbstractUser):
         related_name='extended_user_set',
         related_query_name='extended_user',
     )
+
+    def delete(self, *args, **kwargs):
+        LogEntry.objects.filter(user=self).delete()
+        super().delete(*args, **kwargs)
 
 
 class Profile(models.Model):

@@ -94,7 +94,7 @@ class ChangePasswordView(SuccessMessageMixin, PasswordChangeView):
 
 
 class VerifyView(View):
-    template_name = 'activate.html'
+    template_name = 'registration/activate.html'
 
     def get(self, request, uuid):
         user = get_object_or_404(ExtendedUser, verification_uuid=uuid, is_verified=False)

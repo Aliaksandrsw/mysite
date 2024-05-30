@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from django.dispatch import receiver
 from django.urls import reverse
 from rest_framework.authtoken.models import Token
-
+from mysite.tasks import send_verification_email
 from .models import Profile, ExtendedUser
 
 
@@ -24,11 +24,4 @@ def set_is_active(sender, instance, created, **kwargs):
 @receiver(post_save, sender=ExtendedUser)
 def user_post_save(sender, instance, signal, *args, **kwargs):
     if not instance.is_verified:
-        send_mail(
-            'Verify your  account',
-            'Follow this link to verify your account: '
-            'http://localhost:8000%s' % reverse('verify', kwargs={'uuid': str(instance.verification_uuid)}),
-            'admin@localhost.ru',
-            [instance.email],
-            fail_silently=False,
-        )
+        send_verification_email.delay(instance.pk)
