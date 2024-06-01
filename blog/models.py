@@ -50,8 +50,6 @@ class Post(models.Model):
             self.slug
         ])
 
-
-
     objects = models.Manager()
     published = PublishedManager()
 
@@ -77,4 +75,3 @@ class Comment(models.Model):
 
     def __str__(self):
         return f'Comment by {self.name} on {self.post}'
-

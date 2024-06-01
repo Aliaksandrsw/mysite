@@ -6,7 +6,7 @@ from django.urls import reverse_lazy, reverse
 from django.views import View
 from django.views.generic import ListView, DetailView, FormView, CreateView
 from taggit.models import Tag
-from blog.forms import EmailPostForm, CommentForm, SearchForm
+from blog.forms import EmailPostForm, CommentForm, SearchForm, PostCreateForm
 from blog.models import Post
 
 
@@ -107,3 +107,18 @@ class PostSearch(View):
             'results': results
         })
 
+
+class PostCreateView(CreateView):
+    model = Post
+    template_name = 'blog/post/post_create.html'
+    form_class = PostCreateForm
+    success_url = reverse_lazy('blog:post_list')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Добавление статьи на сайт'
+        return context
+
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+        return super().form_valid(form)

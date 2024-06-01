@@ -6,7 +6,8 @@ load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = str(os.getenv('SECRET_KEY'))
+SECRET_KEY = 'WGYLpCVqVdOyub3T3e12s57KOCP3s5Ssl_sx_NhCVOKgeMscLjCELiycNwEoYxhTdeU'
+
 
 SOCIAL_AUTH_GITHUB_KEY = str(os.getenv('GITHUB_KEY'))
 SOCIAL_AUTH_GITHUB_SECRET = str(os.getenv('GITHUB_SECRET'))
@@ -105,7 +106,7 @@ WSGI_APPLICATION = 'mysite.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'blog',
+        'NAME': 'blog_2',
         'USER': 'blog',
         'PASSWORD': '1234',
         'HOST': '127.0.0.1',
@@ -129,6 +130,7 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 AUTHENTICATION_BACKENDS = (
+    'accounts.backends.VerifiedBackend',
     'social_core.backends.github.GithubOAuth2',
     'social_core.backends.google.GoogleOAuth2',
 

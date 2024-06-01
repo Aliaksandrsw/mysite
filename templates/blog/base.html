@@ -26,6 +26,7 @@
      {% if user.is_authenticated %}
         Hi {{ user.username }}!
         <p><a href="{% url 'users-profile' %}">My profile</a></p>
+        <p><a href="{% url 'blog:post_create' %}">Creat</a></p>
         <form action="{% url 'logout' %}" method="post">
             {% csrf_token %}
             <a href="#" onclick="parentNode.submit();">Log Out</a>

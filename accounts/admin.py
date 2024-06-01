@@ -7,5 +7,7 @@ admin.site.register(Profile)
 
 
 @admin.register(ExtendedUser)
-class ExtendedUserAdmin(UserAdmin):
-    pass
+class CustomUserAdmin(UserAdmin):
+    fieldsets = UserAdmin.fieldsets + (
+        ('Verification', {'fields': ('is_verified',)}),
+    )

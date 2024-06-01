@@ -14,12 +14,6 @@ def create_profile(sender, instance, created, **kwargs):
         Profile.objects.create(user=instance)
 
 
-@receiver(post_save, sender=ExtendedUser)
-def set_is_active(sender, instance, created, **kwargs):
-    if created and instance.is_superuser:
-        instance.is_active = True
-        instance.save()
-
 
 @receiver(post_save, sender=ExtendedUser)
 def user_post_save(sender, instance, signal, *args, **kwargs):
