@@ -1,12 +1,14 @@
 from django.conf import settings
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.postgres.search import SearchVector
 from django.core.mail import send_mail
 from django.shortcuts import render, get_object_or_404
 from django.urls import reverse_lazy, reverse
 from django.views import View
-from django.views.generic import ListView, DetailView, FormView, CreateView
+from django.views.generic import ListView, DetailView, FormView, CreateView, UpdateView
 from taggit.models import Tag
-from blog.forms import EmailPostForm, CommentForm, SearchForm, PostCreateForm
+from blog.forms import EmailPostForm, CommentForm, SearchForm, PostCreateForm, PostUpdateForm
+from blog.mixins import AuthorRequiredMixin
 from blog.models import Post
 
 
@@ -43,15 +45,13 @@ class PostDetail(DetailView):
         post = self.get_object()
         context['form'] = CommentForm()
         context['comments'] = post.comments.filter(active=True)
+        context['is_author'] = self.request.user == post.author
         return context
 
     def get_object(self, queryset=None):
         return get_object_or_404(Post,
                                  status=Post.Status.PUBLISHED,
                                  slug=self.kwargs['post'],
-                                 publish__year=self.kwargs['year'],
-                                 publish__month=self.kwargs['month'],
-                                 publish__day=self.kwargs['day']
                                  )
 
 
@@ -74,7 +74,7 @@ class PostShareView(FormView):
         return super().form_valid(form)
 
 
-class PostComment(CreateView):
+class PostComment(LoginRequiredMixin, CreateView):
     form_class = CommentForm
     template_name = 'blog/post/comment.html'
 
@@ -108,7 +108,7 @@ class PostSearch(View):
         })
 
 
-class PostCreateView(CreateView):
+class PostCreateView(LoginRequiredMixin, CreateView):
     model = Post
     template_name = 'blog/post/post_create.html'
     form_class = PostCreateForm
@@ -121,4 +121,20 @@ class PostCreateView(CreateView):
 
     def form_valid(self, form):
         form.instance.author = self.request.user
+        return super().form_valid(form)
+
+
+class PostUpdateView(AuthorRequiredMixin,UpdateView):
+    model = Post
+    template_name = 'blog/post/post_update.html'
+    context_object_name = 'post'
+    form_class = PostUpdateForm
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = f'Обновление статьи: {self.object.title}'
+        return context
+
+    def form_valid(self, form):
+        form.save()
         return super().form_valid(form)

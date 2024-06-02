@@ -56,3 +56,19 @@ class PostCreateForm(forms.ModelForm):
                 suffix += 1
             slug = f"{slug}-{suffix}"
         return slug
+
+
+class PostUpdateForm(PostCreateForm):
+
+    fixed = forms.BooleanField(required=False)
+
+    class Meta:
+        model = Post
+        fields = PostCreateForm.Meta.fields + ('fixed',)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.fields['fixed'].widget.attrs.update({
+            'class': 'form-check-input'
+        })

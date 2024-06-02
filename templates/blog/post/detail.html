@@ -12,6 +12,9 @@
         <a href="{% url 'blog:post_share' post.id %}">
             Share this post
         </a>
+        {% if is_author %}
+            <a href="{% url 'blog:post_update' post.slug %}">Update</a>
+        {% endif %}
     </p>
     {% with comments.count as total_comments %}
         <h2>
