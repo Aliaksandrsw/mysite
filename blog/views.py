@@ -5,7 +5,7 @@ from django.core.mail import send_mail
 from django.shortcuts import render, get_object_or_404
 from django.urls import reverse_lazy, reverse
 from django.views import View
-from django.views.generic import ListView, DetailView, FormView, CreateView, UpdateView
+from django.views.generic import ListView, DetailView, FormView, CreateView, UpdateView, TemplateView
 from taggit.models import Tag
 from blog.forms import EmailPostForm, CommentForm, SearchForm, PostCreateForm, PostUpdateForm
 from blog.mixins import AuthorRequiredMixin
@@ -91,9 +91,12 @@ class PostComment(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
 
-class PostSearch(View):
-    def get(self, request):
-        form = SearchForm(request.GET)
+class PostSearch(TemplateView):
+    template_name = 'blog/post/search.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        form = SearchForm(self.request.GET)
         query = None
         results = []
         if form.is_valid():
@@ -101,11 +104,10 @@ class PostSearch(View):
             results = Post.published.annotate(
                 search=SearchVector('title', 'body')
             ).filter(search=query)
-        return render(request, 'blog/post/search.html', {
-            'form': form,
-            'query': query,
-            'results': results
-        })
+        context['form'] = form
+        context['query'] = query
+        context['results'] = results
+        return context
 
 
 class PostCreateView(LoginRequiredMixin, CreateView):
@@ -124,7 +126,7 @@ class PostCreateView(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
 
-class PostUpdateView(AuthorRequiredMixin,UpdateView):
+class PostUpdateView(AuthorRequiredMixin, UpdateView):
     model = Post
     template_name = 'blog/post/post_update.html'
     context_object_name = 'post'
