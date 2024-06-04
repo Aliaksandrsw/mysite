@@ -61,8 +61,7 @@ class PostShareView(FormView):
 
     def get_success_url(self):
         post = get_object_or_404(Post, id=self.kwargs.get('post_id'), status=Post.Status.PUBLISHED)
-        return reverse_lazy('blog:post_detail', args=[
-            post.publish.year, post.publish.month, post.publish.day, post.slug])
+        return reverse_lazy('blog:post_detail', args=[post.slug])
 
     def form_valid(self, form):
         post = get_object_or_404(Post, id=self.kwargs.get('post_id'), status=Post.Status.PUBLISHED)
